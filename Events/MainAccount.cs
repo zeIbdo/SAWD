@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Events
@@ -47,13 +43,14 @@ namespace Events
         {
             if (this.Balance >= amount)
             {
-                Balance-=amount;
+                Balance -= amount;
             }
             else
             {
-                base.OnOverdrawnEventHandler(amount-Balance);
+                base.OnOverdrawnEventHandler(amount - Balance);
             }
         }
+        
     }
 
     internal class BankAccount
@@ -69,8 +66,8 @@ namespace Events
         public BankAccount(decimal balance)
         {
             Balance = balance;
-            OverdrawnEventHandler = new EventHandler(OverdrawnEventMethod);      
-        }   
+            OverdrawnEventHandler = new EventHandler(OverdrawnEventMethod);
+        }
 
         public virtual void OnOverdrawnEventHandler(decimal subAmount)
         {
@@ -86,9 +83,19 @@ namespace Events
         private void OverdrawnEventMethod(object sender, EventArgs e)
         {
             OverdrawnEventArgs args = (OverdrawnEventArgs)e;
-            MainAccount bankAccount = (MainAccount)sender;
 
-            MessageBox.Show("Balansinda pul yoxdur " + args.SubAmount + " " + (bankAccount.Balance + bankAccount.SavingAccount.Balance));
+            if (sender is MainAccount)
+            {
+                MainAccount main = sender as MainAccount;
+                MessageBox.Show("Balansinda pul yoxdur " + args.SubAmount + " " + (main.Balance + main.SavingAccount.Balance));
+            }
+            else if (sender is SavingAccount)
+            {
+                SavingAccount sav = sender as SavingAccount;
+                MessageBox.Show("Balansinda pul yoxdur " + args.SubAmount + " " + sav.Balance);
+
+            }
+
         }
 
         public decimal GetBalance() => Balance;
@@ -101,6 +108,6 @@ namespace Events
             SubAmount = subAmount;
         }
 
-        public decimal SubAmount { get; set; }       
+        public decimal SubAmount { get; set; }
     }
 }
